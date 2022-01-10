@@ -1,2 +1,0 @@
-# micangator
-Projeto Micangator
