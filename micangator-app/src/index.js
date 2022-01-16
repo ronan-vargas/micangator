@@ -6,11 +6,11 @@ import './index.css';
 class MicangatorMain extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {nome: '', qtdCores: 1, cor1: '#fff', cor2: '#000', cor3: '#fff'};
+        this.state = {nome: '', qtdCores: 1, tamanho: "P", cores: ['#fff', '#000', '#fff']};
 
         this.handleNomeChange = this.handleNomeChange.bind(this);
         this.handleQtdCoresChange = this.handleQtdCoresChange.bind(this);
-
+        this.handleTamanhoChange = this.handleTamanhoChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     };
 
@@ -25,17 +25,21 @@ class MicangatorMain extends React.Component {
     handleQtdCoresChange(event) {
         this.setState({...this.state, qtdCores: event.target.value});
     };
+
+    handleTamanhoChange(event) {
+        this.setState({...this.state, tamanho: event.target.value});
+    };
     
-    handleChangeCor1Complete = (color) => {
-        this.setState({...this.state, cor1: color.hex });
+    handleChangecor0Complete = (color) => {
+        this.setState({...this.state, cores: [color.hex, this.state.cores[1], this.state.cores[2]]});
     };
 
-    handleChangeCor2Complete = (color) => {
-        this.setState({...this.state, cor2: color.hex });
+    handleChangecor1Complete = (color) => {
+        this.setState({...this.state, cores: [this.state.cores[0], color.hex, this.state.cores[2]]});
     };
 
-    handleChangeCor3Complete = (color) => {
-        this.setState({...this.state, cor3: color.hex });
+    handleChangecor2Complete = (color) => {
+        this.setState({...this.state, cores: [this.state.cores[0], this.state.cores[1], color.hex]});
     };
 
 
@@ -48,47 +52,57 @@ class MicangatorMain extends React.Component {
             </select>
         );
     };
-    
+
+    renderTamanho() {
+        return (
+            <select value={this.state.tamanho} onChange={this.handleTamanhoChange}>
+                <option defaultValue="P">P</option>
+                <option value="M">M</option>
+                <option value="G">G</option>
+            </select>
+        );
+    };
+
+
     renderUnidade(colorValue) {
-        /*let content = <div style={{background: colorValue, width: '25px', height: '25px', borderRadius: '50%', display: 'inline-block'}}/> 
-        content.append(<h1>HelloWorld</h1>)
-        return content;*/    
-        return <div style={{background: colorValue, borderColor: colorValue, width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', textAlign: 'center'}}> </div>   
+        return <div style={{background: colorValue, borderColor: colorValue, color: colorValue, width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', textAlign: 'center', lineHeight: '30px'}}>A</div>   
+    }
+    
+    renderUnidadeBlank() {
+        return <div style={{background: 'white', borderColor: 'white', color: 'white', width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', textAlign: 'center', lineHeight: '30px'}}>A</div>   
     }
 
     renderNome() {
         let arrNome = this.state.nome.split("");
-        let content = arrNome.map((letra, index) => <div style={{borderColor: '#AAAAAA', width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', borderStyle: 'solid', textAlign: 'center'}} key={index}>{letra}</div>)
+        let content = arrNome.map((letra, index) => <div style={{borderColor: '#AAAAAA', width: '30px', height: '30px', borderRadius: '15%', display: 'inline-block', border: '1px solid', textAlign: 'center', lineHeight: '30px'}} key={index}><b>{letra}</b></div>)
         return content;                            
     }
 
     renderAmostra() {
         //alert(this.state.qtdCores);
         if (this.state.qtdCores == 1) {
-            return (<div>{this.renderUnidade(this.state.cor1)}
+            return (<div>{this.renderUnidade(this.state.cores[0])}
             {this.renderNome()}
-                    {this.renderUnidade(this.state.cor1)}</div>);
+                    {this.renderUnidade(this.state.cores[0])}</div>);
         }
         if (this.state.qtdCores == 2) {
-            return (<div>{this.renderUnidade(this.state.cor2)}
-            {this.renderUnidade(this.state.cor1)}
-            <label>{this.state.nome}</label>
-            {this.renderUnidade(this.state.cor1)}
-                    {this.renderUnidade(this.state.cor2)}</div>);
+            return (<div>{this.renderUnidade(this.state.cores[1])}
+            {this.renderUnidade(this.state.cores[0])}
+            {this.renderNome()}
+            {this.renderUnidade(this.state.cores[0])}
+                    {this.renderUnidade(this.state.cores[1])}</div>);
         }
-        return ( <div>{this.renderUnidade(this.state.cor3)}
-            {this.renderUnidade(this.state.cor2)}
-            {this.renderUnidade(this.state.cor1)}
-            <label>{this.state.nome}</label>
-            {this.renderUnidade(this.state.cor1)}
-            {this.renderUnidade(this.state.cor2)}
-            {this.renderUnidade(this.state.cor3)}</div>);       
+        return ( <div>{this.renderUnidade(this.state.cores[2])}
+            {this.renderUnidade(this.state.cores[1])}
+            {this.renderUnidade(this.state.cores[0])}
+            {this.renderNome()}
+            {this.renderUnidade(this.state.cores[0])}
+            {this.renderUnidade(this.state.cores[1])}
+            {this.renderUnidade(this.state.cores[2])}</div>);       
                     
     };
 
     render() {
-        //alert("Render");
-        //return(<h1>"Hello World"</h1>);
         const appName = "Miçangator";
         return(
             <form onSubmit={this.handleSubmit()}>
@@ -107,21 +121,27 @@ class MicangatorMain extends React.Component {
                     <label>Qtd. Cores: {this.renderQtdCores()}</label>
                 </div>
                 <p/>
+               
+                <div>
+                    <label>Tamanho: {this.renderTamanho()}</label>
+                </div>
+                <p/>
                 <div>
                     <label>Cor 1:</label>
                 </div>
                 <p/>
                 <div>
-                    <GithubPicker color={this.state.cor1} onChangeComplete={ this.handleChangeCor1Complete }/>
+                    <GithubPicker color={this.state.cores[0]} onChangeComplete={ this.handleChangecor0Complete }/>
                 </div>
                 <p/>
                 <div hidden={this.state.qtdCores < 2}>
                     <label>Cor 2:</label>
-                    <p/><GithubPicker color={this.state.cor2} onChangeComplete={ this.handleChangeCor2Complete }/>
+                    <p/><GithubPicker color={this.state.cores[1]} onChangeComplete={ this.handleChangecor1Complete }/>
                 </div>
+                <p/> 
                 <div hidden={this.state.qtdCores < 3}>
                     <label>Cor 3:</label>
-                    <p/><GithubPicker color={this.state.cor3} onChangeComplete={ this.handleChangeCor3Complete }/>
+                    <p/><GithubPicker color={this.state.cores[2]} onChangeComplete={ this.handleChangecor2Complete }/>
                 </div>
                 <p/>
                 <div>Amostra:{this.renderAmostra()}</div>
