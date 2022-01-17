@@ -102,6 +102,26 @@ class MicangatorMain extends React.Component {
                     
     };
 
+    range(start, end) {
+        if(start === end) return [start];
+        return [start, ...range(start + 1, end)];
+    }
+
+    renderUnidades(lado) {
+        qtdCores = this.state.qtdCores;
+        if (lado == 'E') {
+            arr = [...Array(qtdCores)..keys()];
+
+        } else {
+            arr = range(qtdCores, qtdCores * 2)
+        }
+    }
+
+    getColorIndex(value) {
+        qtdCores = this.state.qtdCores;
+        return (value % qtdCores - (qtdCores - 1) + (value / qtdCores) % (qtdCores - 1) * (qtdCores - 1)) * Math.pow(-1, value / qtdCores + 1);
+    }
+
     render() {
         const appName = "Miçangator";
         return(
