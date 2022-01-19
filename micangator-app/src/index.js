@@ -64,8 +64,9 @@ class MicangatorMain extends React.Component {
     };
 
 
-    renderUnidade(colorValue) {
-        return <div style={{background: colorValue, borderColor: colorValue, color: colorValue, width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', textAlign: 'center', lineHeight: '30px'}}>A</div>   
+    renderUnidade(colorValue, index) {
+        let chave = index + "_U";
+        return <div style={{background: colorValue, borderColor: colorValue, color: colorValue, width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', textAlign: 'center', lineHeight: '30px'}} key={chave}>A</div>   
     }
     
     renderUnidadeBlank() {
@@ -80,7 +81,7 @@ class MicangatorMain extends React.Component {
 
     renderAmostra() {
         //alert(this.state.qtdCores);
-        if (this.state.qtdCores == 1) {
+        /*if (this.state.qtdCores == 1) {
             return (<div>{this.renderUnidade(this.state.cores[0])}
             {this.renderNome()}
                     {this.renderUnidade(this.state.cores[0])}</div>);
@@ -91,34 +92,37 @@ class MicangatorMain extends React.Component {
             {this.renderNome()}
             {this.renderUnidade(this.state.cores[0])}
                     {this.renderUnidade(this.state.cores[1])}</div>);
-        }
-        return ( <div>{this.renderUnidade(this.state.cores[2])}
-            {this.renderUnidade(this.state.cores[1])}
-            {this.renderUnidade(this.state.cores[0])}
+        }*/
+        return ( <div>{this.renderUnidades("E")}
             {this.renderNome()}
-            {this.renderUnidade(this.state.cores[0])}
-            {this.renderUnidade(this.state.cores[1])}
-            {this.renderUnidade(this.state.cores[2])}</div>);       
+            {this.renderUnidades("D")}</div>);       
                     
     };
 
     range(start, end) {
-        if(start === end) return [start];
-        return [start, ...range(start + 1, end)];
+        if(start == end) return [start];
+        return [start, ...this.range(start + 1, end)];
     }
 
     renderUnidades(lado) {
-        qtdCores = this.state.qtdCores;
-        if (lado == 'E') {
-            arr = [...Array(qtdCores)..keys()];
-
+        let qtdCores = parseInt(this.state.qtdCores);
+        let arr;
+        if (lado == "E") {
+            arr = this.range(0, qtdCores - 1);
         } else {
-            arr = range(qtdCores, qtdCores * 2)
+            arr = this.range(qtdCores, (qtdCores * 2) - 1);
         }
+        let content;
+        if (qtdCores > 1) {
+            content = arr.map((index) => this.renderUnidade(this.state.cores[this.getColorIndex(index)], index));
+        } else {
+            content = arr.map((index) => this.renderUnidade(this.state.cores[0], 0));
+        }
+        return content;
     }
 
     getColorIndex(value) {
-        qtdCores = this.state.qtdCores;
+        let qtdCores = this.state.qtdCores;
         return (value % qtdCores - (qtdCores - 1) + (value / qtdCores) % (qtdCores - 1) * (qtdCores - 1)) * Math.pow(-1, value / qtdCores + 1);
     }
 
