@@ -80,23 +80,9 @@ class MicangatorMain extends React.Component {
     }
 
     renderAmostra() {
-        //alert(this.state.qtdCores);
-        /*if (this.state.qtdCores == 1) {
-            return (<div>{this.renderUnidade(this.state.cores[0])}
-            {this.renderNome()}
-                    {this.renderUnidade(this.state.cores[0])}</div>);
-        }
-        if (this.state.qtdCores == 2) {
-            return (<div>{this.renderUnidade(this.state.cores[1])}
-            {this.renderUnidade(this.state.cores[0])}
-            {this.renderNome()}
-            {this.renderUnidade(this.state.cores[0])}
-                    {this.renderUnidade(this.state.cores[1])}</div>);
-        }*/
         return ( <div>{this.renderUnidades("E")}
             {this.renderNome()}
-            {this.renderUnidades("D")}</div>);       
-                    
+            {this.renderUnidades("D")}</div>);
     };
 
     range(start, end) {
@@ -112,18 +98,15 @@ class MicangatorMain extends React.Component {
         } else {
             arr = this.range(qtdCores, (qtdCores * 2) - 1);
         }
-        let content;
-        if (qtdCores > 1) {
-            content = arr.map((index) => this.renderUnidade(this.state.cores[this.getColorIndex(index)], index));
-        } else {
-            content = arr.map((index) => this.renderUnidade(this.state.cores[0], 0));
-        }
+        let content = arr.map((index) => this.renderUnidade(this.state.cores[this.getColorIndex(index)], index));
         return content;
     }
 
     getColorIndex(value) {
-        let qtdCores = this.state.qtdCores;
-        return (value % qtdCores - (qtdCores - 1) + (value / qtdCores) % (qtdCores - 1) * (qtdCores - 1)) * Math.pow(-1, value / qtdCores + 1);
+        let qtdCores = parseInt(this.state.qtdCores);
+        let end = qtdCores - 1;
+        let quocient = Math.floor(value / qtdCores);
+        return (value % qtdCores - end + quocient % 2 * end) * Math.pow(-1, quocient + 1);
     }
 
     render() {
