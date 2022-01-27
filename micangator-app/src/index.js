@@ -6,7 +6,7 @@ import './index.css';
 class MicangatorMain extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {nome: '', qtdCores: 1, tamanho: "P", cores: ['#fff', '#000', '#fff']};
+        this.state = {nome: '', qtdCores: 1, tamanho: "P", cores: ['#fff', '#fff', '#fff']};
 
         this.handleNomeChange = this.handleNomeChange.bind(this);
         this.handleQtdCoresChange = this.handleQtdCoresChange.bind(this);
@@ -65,49 +65,81 @@ class MicangatorMain extends React.Component {
 
 
     renderUnidade(colorValue, index) {
-        let chave = index + "_U";
-        return <div style={{background: colorValue, borderColor: colorValue, color: colorValue, width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', textAlign: 'center', lineHeight: '30px'}} key={chave}>A</div>   
+        let id = parseInt(Math.random() * 100000);
+        let chave = id + "_U";
+        return <div style={{background: colorValue, borderColor: colorValue, color: colorValue, width: '32px', height: '32px', borderRadius: '50%', display: 'inline-block', textAlign: 'center', lineHeight: '30px'}} key={chave}>A</div>   
     }
     
-    renderUnidadeBlank() {
-        return <div style={{background: 'white', borderColor: 'white', color: 'white', width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', textAlign: 'center', lineHeight: '30px'}}>A</div>   
+    renderUnidadesBlank(count) {
+        let arr = this.range(0, count - 1);
+        let content = arr.map((index) => this.renderUnidadeBlank(index + "_B"));
+        return content;
+    }
+    
+    renderUnidadeBlank(id) {
+        return <div style={{background: 'white', borderColor: 'white', color: 'white', width: '30px', height: '30px', borderRadius: '50%', display: 'inline-block', border: '1px solid', textAlign: 'center', lineHeight: '30px'}} key={id}>A</div>   
     }
 
     renderNome() {
         let arrNome = this.state.nome.split("");
-        let content = arrNome.map((letra, index) => <div style={{borderColor: '#AAAAAA', width: '30px', height: '30px', borderRadius: '15%', display: 'inline-block', border: '1px solid', textAlign: 'center', lineHeight: '30px'}} key={index}><b>{letra}</b></div>)
+        let content = arrNome.map((letra, index) => <div style={{borderColor: '#AAAAAA', color: 'red', width: '30px', height: '30px', borderRadius: '15%', display: 'inline-block', border: '1px solid', textAlign: 'center', lineHeight: '30px'}} key={index}><b>{letra}</b></div>)
         return content;                            
     }
 
     renderAmostra() {
-        return ( <div>{this.renderUnidades("E")}
-            {this.renderNome()}
-            {this.renderUnidades("D")}</div>);
+        let qtdCores = parseInt(this.state.qtdCores);
+        let fator = 1;
+        if (this.state.tamanho == "M") {
+            fator = 2;
+        } else if (this.state.tamanho == "G"){
+            fator = 3;
+        }        
+        let totalUnits = (fator * 2) + this.state.nome.length;
+
+        let contentBlank;
+        if (this.state.nome.length > 0) {
+            contentBlank = this.renderUnidadesBlank(totalUnits - 2);
+        }
+        return ( <div>{this.renderUnidades("E", fator)}
+                {this.renderNome()}
+                {this.renderUnidades("D", fator)}<br/>
+                {this.renderUnidade(this.state.cores[this.getColorIndex(qtdCores)], qtdCores)}    
+                {contentBlank}
+                {this.renderUnidade(this.state.cores[this.getColorIndex(qtdCores)], qtdCores)}<br/>
+                {this.renderUnidades("F", fator)}    
+            </div>);
     };
 
     range(start, end) {
         if(start == end) return [start];
         return [start, ...this.range(start + 1, end)];
-    }
+    };
 
-    renderUnidades(lado) {
+    renderUnidades(lado, fator) {
         let qtdCores = parseInt(this.state.qtdCores);
         let arr;
         if (lado == "E") {
-            arr = this.range(0, qtdCores - 1);
+            arr = this.range(0, (/*qtdCores * */fator - 1)) ;
+        } else if (lado == "D"){
+            arr = this.range(0, (/*qtdCores * */fator - 1)).reverse() ;
+            //arr = this.range(/*qtdCores * */fator, (/*qtdCores * */2) * fator - 1);
         } else {
-            arr = this.range(qtdCores, (qtdCores * 2) - 1);
-        }
-        let content = arr.map((index) => this.renderUnidade(this.state.cores[this.getColorIndex(index)], index));
+            arr = this.range(1, (/*qtdCores * */2) * fator + this.state.nome.length);
+        } 
+        let content = arr.map((index) => this.renderUnidade(this.state.cores[this.getColorIndex(index, lado)], index));
         return content;
     }
 
-    getColorIndex(value) {
+    getColorIndex(value, lado) {
         let qtdCores = parseInt(this.state.qtdCores);
-        let end = qtdCores - 1;
-        let quocient = Math.floor(value / qtdCores);
-        return (value % qtdCores - end + quocient % 2 * end) * Math.pow(-1, quocient + 1);
-    }
+        if (lado == "F") {
+            return value % qtdCores;
+        } else {
+            let end = qtdCores - 1;
+            let quocient = Math.floor(value / qtdCores);
+            return (value % qtdCores - end + quocient % 2 * end) * Math.pow(-1, quocient + 1);
+        }
+    };
 
     render() {
         const appName = "Miçangator";
@@ -151,7 +183,7 @@ class MicangatorMain extends React.Component {
                     <p/><GithubPicker color={this.state.cores[2]} onChangeComplete={ this.handleChangecor2Complete }/>
                 </div>
                 <p/>
-                <div>Amostra:{this.renderAmostra()}</div>
+                <div>Amostra:<p/>{this.renderAmostra()}</div>
             </form>
         );
     }
